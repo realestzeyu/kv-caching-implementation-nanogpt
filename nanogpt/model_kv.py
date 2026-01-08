@@ -422,20 +422,18 @@ class GPT(nn.Module):
         the sequence max_new_tokens times, feeding the predictions back into the model each time.
         Most likely you'll want to make sure to be in model.eval() mode of operation for this.
         """
-        # ✅ Initialize cache OUTSIDE the loop
+        # CHANGE: initialize cache OUTSIDE the loop
         past_kv = None
 
         for i in range(max_new_tokens):
-            # ✅ First iteration: process full prompt; subsequent: only last token
+            # only feed in the last token, so first time all tokens, then afterwards most recent
             if i == 0:
                 idx_cond = idx
             else:
                 idx_cond = idx[:, -1:]
-
-            # ✅ Pass the accumulated cache
+            # same logic as before, just need an extra present_kv output
             logits, _, present_kvs = self.forward(idx_cond, past_kv=past_kv)
-
-            # ✅ Update cache for next iteration
+            # update cache
             past_kv = present_kvs
 
             # pluck the logits at the final step and scale by desired temperature
