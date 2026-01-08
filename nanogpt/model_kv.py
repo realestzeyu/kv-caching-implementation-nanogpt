@@ -422,7 +422,7 @@ class GPT(nn.Module):
         the sequence max_new_tokens times, feeding the predictions back into the model each time.
         Most likely you'll want to make sure to be in model.eval() mode of operation for this.
         """
-        # CHANGE: initialize cache OUTSIDE the loop
+        # CHANGE: initialise cache OUTSIDE the loop
         past_kv = None
 
         for i in range(max_new_tokens):
