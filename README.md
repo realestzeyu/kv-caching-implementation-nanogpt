@@ -15,18 +15,21 @@ To start off:
 1. Understand the mathematical computation of self-attention using Q, K, V.
 2. Understand how NanoGPT utilises PyTorch's batch multiplication to do parallel processing of attention computation
 3. Implement KV caching into NanoGPT, referencing GPT-2 (very tough ngl)
+    - modifying the `forward()` methods in `model.py` of NanoGPT
 4. Benchmark token processing and generation speed before and after KV caching.
+    - Python script to run and visualise the improvement
 
 ### TLDR
+> This project modifies the original NanoGPT implementation to include KV caching, based on my understanding of GPT which stores previously computed key-value pairs during generation. 
 
-This project modifies the original NanoGPT implementation to include KV caching, based on my understanding of GP which stores previously computed key-value pairs during generation. 
+## Important Files
 
-## Files that are important
-
+- [Documentation](https://github.com/realestzeyu/kv-caching-implementation-nanogpt/blob/main/KV%20Caching%20in%20NanoGPT%20Documentation.pdf) - Detailed explanation and walkthrough of the project
+- Presentation Slides [1](https://github.com/realestzeyu/kv-caching-implementation-nanogpt/blob/main/KV%20Caching%20in%20NanoGPT%20Presentation%20Part%201.pdf) & [2](https://github.com/realestzeyu/kv-caching-implementation-nanogpt/blob/main/KV%20Caching%20in%20NanoGPT%20Presentation%20Part%202.pdf)- used to explain briefly & intuitively of the project
 - `model.py` - Original NanoGPT model
-- `model_kv.py` - Modified model with KV caching implementation
+- `model_kv.py` - **Modified** model with KV caching implementation
 - `benchmark.py` - Script to benchmark performance with and without KV caching
-- `benchmark_clean.png` - Performance comparison graphs
+- `benchmark_clean.png` - Performance comparison graphs with and without KV caching
 
 
 
