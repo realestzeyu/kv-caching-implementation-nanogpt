@@ -83,7 +83,6 @@ class CausalSelfAttention(nn.Module):
             past_k, past_v = past_kv
             k = torch.cat([past_k, k], dim=2)
             v = torch.cat([past_v, v], dim=2)
-            print(f"[KV DEBUG] T={T}, q_len, {q.size(2)} , k_len = {k.size(2)} , past_k shape={past_k.shape}, new k shape={k.shape}")
         present = (k, v)  # the new cache to return
 
         # Self-attend: (B, nh, T, hs) x (B, nh, hs, kv_len) -> (B, nh, T, kv_len)
@@ -98,7 +97,7 @@ class CausalSelfAttention(nn.Module):
                 v,
                 attn_mask=None,
                 dropout_p=self.dropout if self.training else 0,
-                is_causal=True,  # CHANGE, make it True all the time
+                is_causal=is_causal,  # CHANGE, no longer always true
             )
         else:
             # manual implementation of attention
@@ -251,11 +250,8 @@ class GPT(nn.Module):
             pos = torch.arange(
                 past_length, past_length + t, dtype=torch.long, device=device
             )
-            # print(f"[DEBUG] past_length={past_length}, t={t}, pos={pos.tolist()}")
         else:
             pos = torch.arange(0, t, dtype=torch.long, device=device)
-            # print(f"[DEBUG] No cache, t={t}, pos={pos.tolist()}")
-
 
         # forward the GPT model itself
         tok_emb = self.transformer.wte(idx)  # token embeddings of shape (b, t, n_embd)
@@ -266,13 +262,8 @@ class GPT(nn.Module):
         for i, block in enumerate(self.transformer.h):
             # feed correct cache to each layer by getting layer i's old cache
             layer_past = past_kv[i] if past_kv is not None else None
-            # if layer_past is None:
-            #     print(f"[DEBUG] Layer {i}: NO past_kv")
-            # else:
-            #     print(f"[DEBUG] Layer {i}: past_kv length = {layer_past[0].shape[2]}")
             # block returns hidden state + kv
             x, layer_present = block(x, past_kv=layer_past)
-            # print(f"[DEBUG] Layer {i}: present_kv shape K={layer_present[0].shape}, V={layer_present[1].shape}")
             present_kvs.append(layer_present)  # save the updated cache
         x = self.transformer.ln_f(x)
 
@@ -288,11 +279,6 @@ class GPT(nn.Module):
                 x[:, [-1], :]
             )  # note: using list [-1] to preserve the time dim
             loss = None
-        print("[DEBUG] Returning present_kvs summary:")
-        if past_kv is not None:
-            print("[DEBUG] logits mean:", logits.mean().item())
-        for i, kv in enumerate(present_kvs):
-            print(f"  Layer {i}: K/V length = {kv[0].shape[2]}")
         return logits, loss, present_kvs
 
     def crop_block_size(self, block_size):
