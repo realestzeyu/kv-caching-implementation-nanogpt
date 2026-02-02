@@ -17,8 +17,8 @@ model_orig = orig.GPT.from_pretrained("gpt2").to(device).eval()
 model_kv = kv.GPT.from_pretrained("gpt2").to(device).eval()
 
 # Test configs
-prompts = [i for i in range(10, 101, 10)]  # no. of tokens in the prompt
-gens = [i for i in range(10, 101, 10)]  # no. of tokens to generate
+prompts = [i for i in range(10, 201, 20)]  # no. of tokens in the prompt
+gens = [i for i in range(10, 201, 20)]  # no. of tokens to generate
 
 results = {
     "orig": [],
@@ -138,6 +138,6 @@ ax2.legend()
 ax2.grid(alpha=0.3)
 
 plt.tight_layout()
-plt.savefig("benchmark_clean.png", dpi=150)
+plt.savefig("newbenchmark_clean.png", dpi=150)
 print("\n Saved benchmark_clean.png")
 plt.show()

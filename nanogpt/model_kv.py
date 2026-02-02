@@ -101,12 +101,13 @@ class CausalSelfAttention(nn.Module):
             )
         else:
             # manual implementation of attention
-            if past_kv is not None:
+            att = (q @ k.transpose(-2, -1)) * (1.0 / math.sqrt(k.size(-1)))
+            if past_kv is None:
+                att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float("-inf"))
+            else:
                 # SKIP mask application when using cache
                 pass
-            else:
-                att = att.masked_fill(self.bias[:, :, :T, :T] == 0, float("-inf"))
-                att = F.softmax(att, dim=-1)
+            att = F.softmax(att, dim=-1)
             att = self.attn_dropout(att)
             y = att @ v  # (B, nh, T, kv_len) x (B, nh, kv_len, hs) -> (B, nh, T, hs)
         y = (
@@ -259,10 +260,8 @@ class GPT(nn.Module):
 
         present_kvs = []  # initalise list to store updated kv cache
         for i, block in enumerate(self.transformer.h):
-
             # feed correct cache to each layer by getting layer i's old cache
             layer_past = past_kv[i] if past_kv is not None else None
-
             # block returns hidden state + kv
             x, layer_present = block(x, past_kv=layer_past)
             present_kvs.append(layer_present)  # save the updated cache
@@ -280,7 +279,6 @@ class GPT(nn.Module):
                 x[:, [-1], :]
             )  # note: using list [-1] to preserve the time dim
             loss = None
-
         return logits, loss, present_kvs
 
     def crop_block_size(self, block_size):
