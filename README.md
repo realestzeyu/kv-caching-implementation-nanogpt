@@ -1,6 +1,6 @@
 # NanoGPT KV Caching Implementation
 
-Implementation of Key-Value (KV) caching in NanoGPT to improve inference efficiency during autoregressive text generation.
+Implementation of Key-Value (KV) caching in NanoGPT(by Andrej Karpathy) to improve inference efficiency during autoregressive text generation.
 
 ## Preamble
 Transformer architectures have become the standard in AI, particularly for large language models (LLMs), largely replacing RNNs for many NLP tasks. This is because language processing is inherently contextual: the meaning of a word can change drastically depending on previous words.
@@ -28,10 +28,12 @@ To start off:
 - Presentation Slides [1](https://github.com/realestzeyu/kv-caching-implementation-nanogpt/blob/main/KV%20Caching%20in%20NanoGPT%20Presentation%20Part%201.pdf) & [2](https://github.com/realestzeyu/kv-caching-implementation-nanogpt/blob/main/KV%20Caching%20in%20NanoGPT%20Presentation%20Part%202.pdf)- used to explain briefly & intuitively of the project
 - `model.py` - Original NanoGPT model
 - `model_kv.py` - **Modified** model with KV caching implementation
-- `benchmark.py` - Script to benchmark performance with and without KV caching
-- `benchmark_clean.png` - Performance comparison graphs with and without KV caching
+- `benchmark.py` - Script to benchmark autoregressive performance with and without KV caching
+- `benchmark_clean.png` - Performance comparison graphs with and without KV caching (old)
+- `newbenchmark_clean.png` - Performance comparison graphs with and without KV caching (new, look at note below)
+- `compare_models.py` - Script to compare english text generation outputs
 
-
+> Note: Extra line of code for attention computation in `model_kv.py` under `CausalSelfAttention.forward()` is added. (line 104 in `model_kv.py`) Accidentally left out in the previous version. Thus, the documentation and presentation slides misses this line. The explanation does not change, was just a careless mistake.
 
 ## Author
 
